@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0f2f57" />
+  <meta name="description" content="ComissionaIA • Acionamentos Industriais - ferramenta didática para situação de aprendizagem SENAI." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>ComissionaIA • Acionamentos Industriais</title>
+</head>
+<body>
+  <header class="brandbar">
+    <div class="brand-wrap">
+      <img src="assets/senai-topo.png" alt="SENAI" class="brand-img" />
+      <div class="brand-copy">
+        <strong>ComissionaIA</strong>
+        <span>Acionamentos Industriais</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="btnInstall" class="btn ghost" hidden>Instalar</button>
+      <button id="btnSave" class="btn">Salvar</button>
+      <button id="btnExport" class="btn secondary">Exportar JSON</button>
+      <label class="btn ghost file-btn">Importar JSON<input id="fileImport" type="file" accept="application/json" hidden></label>
+      <button id="btnReport" class="btn accent">Relatório / PDF</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero card">
+      <div>
+        <span class="eyebrow">Situação de Aprendizagem</span>
+        <h1>Comissionamento de um Sistema de Acionamento Elétrico Industrial</h1>
+        <p>Projeto integrador com situações-problema e práticas de laboratório. A equipe prepara, monta, testa, diagnostica e coloca em operação um sistema de acionamento de motor em uma célula industrial didática.</p>
+      </div>
+      <div class="status-box">
+        <div class="status-label">Status geral</div>
+        <div id="generalStatus" class="status-pill warn">EM ANDAMENTO</div>
+        <div class="progress"><div id="progressBar"></div></div>
+        <div id="progressText" class="muted">0% concluído</div>
+      </div>
+    </section>
+
+    <section class="grid two">
+      <article class="card">
+        <h2>Identificação do projeto</h2>
+        <div class="form-grid">
+          <label>Equipe<input data-bind="project.team" placeholder="Ex.: Equipe 03"></label>
+          <label>Turma<input data-bind="project.class" placeholder="Ex.: Téc. Eletrotécnica"></label>
+          <label>Motor / bancada<input data-bind="project.asset" placeholder="Ex.: Motor M1 - Bancada 04"></label>
+          <label>Data<input data-bind="project.date" type="date"></label>
+          <label class="full">Responsáveis<input data-bind="project.members" placeholder="Nomes dos integrantes"></label>
+        </div>
+      </article>
+      <article class="card">
+        <h2>Roteiro do comissionamento</h2>
+        <div id="stageChips" class="chips"></div>
+        <p class="muted">O sistema atualiza automaticamente o progresso conforme as evidências são preenchidas.</p>
+      </article>
+    </section>
+
+    <section class="tabs card no-print">
+      <button class="tab active" data-tab="seguranca">1. Segurança</button>
+      <button class="tab" data-tab="motor">2. Motor</button>
+      <button class="tab" data-tab="componentes">3. Componentes</button>
+      <button class="tab" data-tab="montagem">4. Montagem</button>
+      <button class="tab" data-tab="medicoes">5. Medições</button>
+      <button class="tab" data-tab="falhas">6. Diagnóstico</button>
+      <button class="tab" data-tab="comissionamento">7. Comissionamento</button>
+      <button class="tab" data-tab="evidencias">8. Evidências</button>
+    </section>
+
+    <section id="seguranca" class="panel active card">
+      <div class="panel-head"><div><span class="eyebrow">Etapa 1</span><h2>Segurança e preparação</h2></div><span id="safetyBadge" class="badge">0%</span></div>
+      <p>Antes de qualquer energização, confirme as condições mínimas de segurança e organização do ambiente.</p>
+      <div id="safetyList" class="check-grid"></div>
+      <label class="full">Riscos identificados<textarea data-bind="safety.notes" placeholder="Descreva riscos, interferências e medidas de controle..."></textarea></label>
+    </section>
+
+    <section id="motor" class="panel card">
+      <div class="panel-head"><div><span class="eyebrow">Etapa 2</span><h2>Leitura de placa e dados do motor</h2></div><span id="motorBadge" class="badge">0%</span></div>
+      <div class="form-grid three">
+        <label>Potência (kW)<input data-number data-bind="motor.power" type="number" step="0.01"></label>
+        <label>Tensão nominal (V)<input data-number data-bind="motor.voltage" type="number" step="1"></label>
+        <label>Corrente nominal (A)<input data-number data-bind="motor.current" type="number" step="0.01"></label>
+        <label>Frequência (Hz)<input data-number data-bind="motor.frequency" type="number" step="1"></label>
+        <label>Rotação (rpm)<input data-number data-bind="motor.rpm" type="number" step="1"></label>
+        <label>Fator de potência<input data-number data-bind="motor.pf" type="number" min="0" max="1" step="0.01"></label>
+        <label>Rendimento (%)<input data-number data-bind="motor.eff" type="number" min="0" max="100" step="0.1"></label>
+        <label>Ligação<input data-bind="motor.connection" placeholder="Ex.: 220/380 V Δ/Y"></label>
+        <label>Classe / grau de proteção<input data-bind="motor.ip" placeholder="Ex.: IP55"></label>
+      </div>
+      <div id="motorAnalysis" class="callout info">Preencha os dados para gerar a análise automática.</div>
+    </section>
+
+    <section id="componentes" class="panel card">
+      <div class="panel-head"><div><span class="eyebrow">Etapa 3</span><h2>Seleção de componentes</h2></div><span id="componentBadge" class="badge">0%</span></div>
+      <div class="form-grid">
+        <label>Tipo de acionamento<select data-bind="components.driveType"><option value="">Selecione</option><option>Partida direta</option><option>Partida direta com reversão</option><option>Estrela-triângulo</option><option>Soft-starter</option><option>Inversor de frequência</option></select></label>
+        <label>Proteção principal<input data-bind="components.protection" placeholder="Ex.: disjuntor-motor"></label>
+        <label>Dispositivo de manobra<input data-bind="components.switching" placeholder="Ex.: contator"></label>
+        <label>Proteção de sobrecarga<input data-bind="components.overload" placeholder="Ex.: relé térmico"></label>
+        <label>Comando / sinalização<input data-bind="components.control" placeholder="Ex.: botoeiras + sinaleiras"></label>
+        <label>Condutores / seção<input data-bind="components.cables" placeholder="Ex.: 2,5 mm² Cu"></label>
+      </div>
+      <button id="btnValidateComponents" class="btn secondary no-print">Validar coerência</button>
+      <div id="componentAnalysis" class="callout neutral">Selecione o acionamento e preencha os componentes.</div>
+    </section>
+
+    <section id="montagem" class="panel card">
+      <div class="panel-head"><div><span class="eyebrow">Etapa 4</span><h2>Montagem e inspeção</h2></div><span id="assemblyBadge" class="badge">0%</span></div>
+      <div id="assemblyList" class="check-grid"></div>
+      <label class="full">Observações de montagem<textarea data-bind="assembly.notes" placeholder="Registre ajustes, não conformidades e correções realizadas..."></textarea></label>
+    </section>
+
+    <section id="medicoes" class="panel card">
+      <div class="panel-head"><div><span class="eyebrow">Etapa 5</span><h2>Medições e testes</h2></div><span id="measurementBadge" class="badge">0%</span></div>
+      <div class="measurement-grid">
+        <div class="metric"><label>Tensão L-L medida (V)<input data-number data-bind="measurements.voltage" type="number" step="0.1"></label><div id="voltageDeviation" class="metric-result">—</div></div>
+        <div class="metric"><label>Corrente medida (A)<input data-number data-bind="measurements.current" type="number" step="0.01"></label><div id="currentDeviation" class="metric-result">—</div></div>
+        <div class="metric"><label>Frequência medida (Hz)<input data-number data-bind="measurements.frequency" type="number" step="0.1"></label><div id="freqDeviation" class="metric-result">—</div></div>
+        <div class="metric"><label>Sentido de rotação<select data-bind="measurements.rotation"><option value="">Selecione</option><option>Correto</option><option>Invertido</option></select></label><div id="rotationResult" class="metric-result">—</div></div>
+      </div>
+      <div id="measurementAnalysis" class="callout info">Os desvios serão comparados com os dados nominais do motor.</div>
+    </section>
+
+    <section id="falhas" class="panel card">
+      <div class="panel-head"><div><span class="eyebrow">Etapa 6</span><h2>Diagnóstico orientado de falhas</h2></div><span id="faultBadge" class="badge">0%</span></div>
+      <div class="grid two">
+        <div>
+          <label>Cenário<select id="faultScenario"><option value="">Selecione ou sorteie</option></select></label>
+          <button id="btnRandomFault" class="btn secondary no-print">Sortear falha</button>
+          <div id="faultPrompt" class="scenario-box">Selecione um cenário.</div>
+        </div>
+        <div>
+          <label>Hipótese inicial<textarea data-bind="faults.hypothesis" placeholder="Qual a causa provável?"></textarea></label>
+          <label>Teste realizado<textarea data-bind="faults.test" placeholder="Qual medição ou teste foi feito?"></textarea></label>
+          <label>Resultado encontrado<textarea data-bind="faults.result" placeholder="O que foi observado?"></textarea></label>
+          <label>Conclusão / ação corretiva<textarea data-bind="faults.conclusion" placeholder="Qual a conclusão e a correção?"></textarea></label>
+          <button id="btnEvaluateFault" class="btn accent no-print">Avaliar raciocínio</button>
+        </div>
+      </div>
+      <div id="faultFeedback" class="callout neutral">A avaliação orienta o raciocínio sem entregar a resposta imediatamente.</div>
+    </section>
+
+    <section id="comissionamento" class="panel card">
+      <div class="panel-head"><div><span class="eyebrow">Etapa 7</span><h2>Checklist final de comissionamento</h2></div><span id="commissionBadge" class="badge">0%</span></div>
+      <div id="commissionList" class="check-grid"></div>
+      <div id="releaseStatus" class="release blocked"><strong>PENDÊNCIAS PARA LIBERAÇÃO</strong><span>Conclua os itens críticos para liberar o sistema.</span></div>
+    </section>
+
+    <section id="evidencias" class="panel card">
+      <div class="panel-head"><div><span class="eyebrow">Etapa 8</span><h2>Produto e evidências</h2></div><span id="evidenceBadge" class="badge">0%</span></div>
+      <div id="evidenceList" class="check-grid"></div>
+      <label>Resumo técnico final<textarea data-bind="evidence.summary" placeholder="Sintetize o que foi montado, testado, corrigido e liberado..."></textarea></label>
+      <label>Aprendizados da equipe<textarea data-bind="evidence.learning" placeholder="Principais aprendizados técnicos e socioemocionais..."></textarea></label>
+    </section>
+
+    <section id="report" class="card report-section">
+      <div class="report-head"><span class="eyebrow">Relatório automático</span><h2>Relatório de Comissionamento</h2><p class="muted">Este conteúdo é atualizado automaticamente e pode ser impresso/salvo em PDF.</p></div>
+      <div id="reportContent"></div>
+    </section>
+  </main>
+
+  <footer><strong>ComissionaIA • Acionamentos Industriais</strong><span>Ferramenta didática para aprendizagem baseada em projeto e evidências.</span></footer>
+  <script src="app.js"></script>
+</body>
+</html>
